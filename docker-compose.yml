@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres # You can specify a different version if needed
+    container_name: ai_transcript_pg_db # Optional: Give your container a specific name
+    environment:
+      POSTGRES_DB: ai_transcript # Name of the database to be created
+      POSTGRES_USER: admin # Username for the database
+      POSTGRES_PASSWORD: admin # Password for the database user
+    ports:
+      - 5678:5432 # Map host port 5678 to container port 5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Persistent storage for database data
+
+volumes:
+  pgdata: # Define the named volume for persistent data
