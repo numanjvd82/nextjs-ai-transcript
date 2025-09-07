@@ -1,0 +1,48 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  email        String    @unique
+  passwordHash String
+  meetings     Meeting[]
+}
+
+model Meeting {
+  id          Int            @id @default(autoincrement())
+  title       String
+  createdAt   DateTime       @default(now())
+  host        User           @relation(fields: [hostId], references: [id])
+  hostId      Int
+  transcripts Transcript[]
+  summaries   Summary[]
+  blockchain  BlockchainLog?
+}
+
+model Transcript {
+  id        Int     @id @default(autoincrement())
+  content   String
+  meeting   Meeting @relation(fields: [meetingId], references: [id])
+  meetingId Int     @unique
+}
+
+model Summary {
+  id        Int     @id @default(autoincrement())
+  summary   String
+  meeting   Meeting @relation(fields: [meetingId], references: [id])
+  meetingId Int
+}
+
+model BlockchainLog {
+  id        Int     @id @default(autoincrement())
+  txHash    String
+  meeting   Meeting @relation(fields: [meetingId], references: [id])
+  meetingId Int     @unique
+}
