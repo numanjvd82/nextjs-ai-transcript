@@ -10,7 +10,7 @@ interface User {
   email: string;
 }
 
-export default function TranscriptPage() {
+export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);

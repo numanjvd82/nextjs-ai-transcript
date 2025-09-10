@@ -42,15 +42,7 @@ export default function UserMenu({ user }: UserMenuProps) {
   };
 
   if (!user) {
-    return (
-      <Link
-        href="/auth"
-        className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm h-10 px-4"
-      >
-        <UserCircleIcon className="h-5 w-5" />
-        <span>Sign in</span>
-      </Link>
-    );
+    return null;
   }
 
   return (
@@ -86,7 +78,7 @@ export default function UserMenu({ user }: UserMenuProps) {
             <Menu.Item>
               {({ active }) => (
                 <Link
-                  href="/transcript"
+                  href="/dashboard"
                   className={`${
                     active ? "bg-black/[.05] dark:bg-white/[.06]" : ""
                   } flex w-full items-center px-4 py-2 text-sm`}

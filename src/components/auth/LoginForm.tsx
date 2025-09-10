@@ -59,7 +59,7 @@ export default function LoginForm({ onComplete }: LoginFormProps) {
       }
 
       if (onComplete) onComplete();
-      router.push("/");
+      router.push("/dashboard");
       router.refresh();
     } catch (err) {
       setServerError(err instanceof Error ? err.message : "Login failed");

@@ -1,14 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import LoginForm from "@/components/auth/LoginForm";
 import SignupForm from "@/components/auth/SignupForm";
-import { Tab } from "@headlessui/react";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 export default function Auth() {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  useEffect(() => {
+    // Update selected tab when URL parameters change
+    if (tabParam === "login") {
+      setSelectedIndex(0);
+    } else if (tabParam === "signup") {
+      setSelectedIndex(1);
+    }
+  }, [tabParam]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-8">
@@ -23,8 +35,17 @@ export default function Auth() {
           <h1 className="text-xl font-medium">Account</h1>
         </div>
 
-        <Tab.Group selectedIndex={selectedIndex} onChange={setSelectedIndex}>
-          <Tab.List className="mb-6 flex rounded-md border border-solid border-black/[.08] dark:border-white/[.145] p-1">
+        <TabGroup
+          selectedIndex={selectedIndex}
+          onChange={(index) => {
+            setSelectedIndex(index);
+            // Update the URL parameter without refreshing the page
+            const url = new URL(window.location.href);
+            url.searchParams.set("tab", index === 0 ? "login" : "signup");
+            window.history.replaceState({}, "", url.toString());
+          }}
+        >
+          <TabList className="mb-6 flex rounded-md border border-solid border-black/[.08] dark:border-white/[.145] p-1">
             <Tab
               className={({ selected }) =>
                 `flex-1 py-2 text-center text-sm font-medium transition-colors rounded-md
@@ -49,16 +70,16 @@ export default function Auth() {
             >
               Sign Up
             </Tab>
-          </Tab.List>
-          <Tab.Panels>
-            <Tab.Panel>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
               <LoginForm onComplete={() => {}} />
-            </Tab.Panel>
-            <Tab.Panel>
-              <SignupForm onComplete={() => setSelectedIndex(0)} />
-            </Tab.Panel>
-          </Tab.Panels>
-        </Tab.Group>
+            </TabPanel>
+            <TabPanel>
+              <SignupForm />
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
       </div>
     </div>
   );

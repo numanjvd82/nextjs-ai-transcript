@@ -11,9 +11,7 @@ import {
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
 
-interface SignupFormProps {
-  onComplete?: () => void;
-}
+interface SignupFormProps {}
 
 const signupSchema = z
   .object({
@@ -29,7 +27,7 @@ const signupSchema = z
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
-export default function SignupForm({ onComplete }: SignupFormProps) {
+export default function SignupForm({}: SignupFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState("");
 
@@ -69,9 +67,8 @@ export default function SignupForm({ onComplete }: SignupFormProps) {
       if (!response.ok) {
         throw new Error(responseData.error || "Signup failed");
       }
-
-      if (onComplete) onComplete();
     } catch (err) {
+      console.log(err);
       setServerError(err instanceof Error ? err.message : "Signup failed");
     } finally {
       setIsLoading(false);

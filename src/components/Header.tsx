@@ -47,7 +47,27 @@ export default function Header() {
           />
         </Link>
 
-        {!isLoading && <UserMenu user={user} />}
+        <div className="flex items-center gap-4">
+          {!isLoading &&
+            (user ? (
+              <UserMenu user={user} />
+            ) : (
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/auth?tab=login"
+                  className="text-sm font-medium hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/auth?tab=signup"
+                  className="text-sm font-medium bg-foreground text-background py-1.5 px-4 rounded-full hover:bg-[#383838] dark:hover:bg-[#ccc] transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            ))}
+        </div>
       </div>
     </header>
   );
