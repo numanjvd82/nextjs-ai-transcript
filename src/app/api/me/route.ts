@@ -21,12 +21,16 @@ export async function GET(req: Request) {
   }
 
   try {
-    const payload = verifyJwt(token) as {
-      id: number;
-      email: string;
-    };
-    if (!payload || !payload.id) {
-      return NextResponse.json({ user: null });
+    const payload = verifyJwt(token);
+    console.log(payload);
+
+    if (!payload) {
+      return NextResponse.json(
+        { user: null },
+        {
+          status: 401,
+        }
+      );
     }
 
     const prisma = new PrismaClient();
@@ -42,11 +46,21 @@ export async function GET(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json({ user: null });
+      return NextResponse.json(
+        { user: null },
+        {
+          status: 404,
+        }
+      );
     }
 
     return NextResponse.json({ user });
   } catch (error) {
-    return NextResponse.json({ user: null });
+    return NextResponse.json(
+      { user: null },
+      {
+        status: 500,
+      }
+    );
   }
 }

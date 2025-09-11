@@ -15,9 +15,27 @@ export function signJwt(payload: object) {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 }
 
-export function verifyJwt(token: string) {
+type UserPayload = {
+  id: number;
+  email: string;
+  iat: number;
+  exp: number;
+};
+
+export function verifyJwt(token: string): UserPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, JWT_SECRET) as UserPayload;
+    if (!payload || !payload.id) {
+      return null;
+    }
+
+    const currentTime = Date.now() / 1000; // Current time in seconds since epoch
+
+    if (payload.exp < currentTime) {
+      return null;
+    }
+
+    return payload;
   } catch {
     return null;
   }
