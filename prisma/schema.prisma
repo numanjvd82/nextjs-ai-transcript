@@ -28,9 +28,26 @@ model Meeting {
 
 model Transcript {
   id        Int     @id @default(autoincrement())
-  content   String
   meeting   Meeting @relation(fields: [meetingId], references: [id])
-  meetingId Int     @unique
+  meetingId Int
+
+  // Core data
+  content  String // transcription text
+  audioUrl String // URL/path to stored mp3 file (S3, local, etc.)
+
+  // Metadata
+  detectedLang    String // ISO code, e.g. "en", "ur", "es"
+  sentiment       String // e.g. "positive", "neutral", "negative"
+  confidenceScore Float // transcription model confidence (0-1)
+  durationSec     Int // length of audio in seconds
+
+  // For ML training
+  embedding Json? // vector embedding (for semantic search or clustering)
+  labels    String[] // tags, e.g. ["customer-support", "complaint"]
+
+  // Audit
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Summary {

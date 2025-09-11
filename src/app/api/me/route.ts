@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { verifyJwt } from "@/app/lib/auth";
+import { verifyJwt } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(req: Request) {
   const cookieHeader = req.headers.get("cookie");
@@ -33,7 +33,6 @@ export async function GET(req: Request) {
       );
     }
 
-    const prisma = new PrismaClient();
     const user = await prisma.user.findUnique({
       where: {
         id: payload.id,

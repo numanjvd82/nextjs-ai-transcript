@@ -12,6 +12,7 @@ import {
 } from "@headlessui/react";
 import { CloudArrowUpIcon, MicrophoneIcon } from "@heroicons/react/24/outline";
 import useVideoToAudio from "@/hooks/useVideoToAudio";
+import AudioExtractionModal from "@/components/modals/AudioExtractionModal";
 
 interface User {
   id: string;
@@ -24,7 +25,9 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { setVideoFile, audioURL } = useVideoToAudio(null);
+  const [isExtractionModalOpen, setIsExtractionModalOpen] = useState(false);
+  const { setVideoFile, audioURL, isProcessing, error, messageRef } =
+    useVideoToAudio(null);
 
   // Function to handle file upload button click
   const handleUploadClick = () => {
@@ -41,6 +44,7 @@ export default function DashboardPage() {
       if (fileType.startsWith("audio/")) {
         router.push("/transcript/upload");
       } else if (fileType.startsWith("video/")) {
+        setIsExtractionModalOpen(true);
         setVideoFile(file);
       } else {
         alert("Please upload a valid audio or video file.");
@@ -150,10 +154,16 @@ export default function DashboardPage() {
               className="hidden"
               onChange={handleFileChange}
             />
-            <audio
-              src={audioURL ? audioURL : undefined}
-              controls
-              className="mt-4"
+            {audioURL && <audio src={audioURL} controls className="mt-4" />}
+
+            {/* Audio Extraction Modal */}
+            <AudioExtractionModal
+              isOpen={isExtractionModalOpen}
+              setIsOpen={setIsExtractionModalOpen}
+              isProcessing={isProcessing}
+              error={error}
+              messageRef={messageRef}
+              audioURL={audioURL}
             />
           </div>
         </div>
