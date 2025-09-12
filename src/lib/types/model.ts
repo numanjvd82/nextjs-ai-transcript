@@ -18,3 +18,13 @@ export type Transcript = Prisma.TranscriptGetPayload<{
     segments: true;
   };
 }>;
+
+export type TranscriptSegment = Prisma.SegmentGetPayload<{
+  select: {
+    id: true;
+    transcriptId: true;
+    start: true;
+    end: true;
+    text: true;
+  };
+}>;

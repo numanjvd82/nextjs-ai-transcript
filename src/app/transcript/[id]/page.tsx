@@ -9,6 +9,7 @@ import {
   TagIcon,
 } from "@heroicons/react/24/outline";
 import { getSignedUrl } from "@/lib/r2";
+import SegmentedTranscript from "@/components/transcript/SegmentedTranscript";
 
 export default async function TranscriptPage({
   params,
@@ -16,12 +17,12 @@ export default async function TranscriptPage({
   params: { id: string };
 }) {
   // Get the current user session
-  const { id } = await params;
+  const { id } = params;
   const session = await getServerSession();
 
   // Redirect to login if not authenticated
   if (!session) {
-    redirect("/auth?callbackUrl=/transcript/" + params.id);
+    redirect("/auth?callbackUrl=/transcript/" + id);
   }
 
   try {
@@ -31,6 +32,9 @@ export default async function TranscriptPage({
         id: Number(id),
         userId: session.user.id, // Security: ensure user can only see their own transcripts
       },
+      include: {
+        segments: true, // Include segments for timestamped transcript
+      },
     });
 
     // Return 404 if transcript not found
@@ -39,6 +43,9 @@ export default async function TranscriptPage({
     }
 
     const audioUrl = await getSignedUrl(transcript.audioUrl);
+
+    // Check if we have segments to show
+    const hasSegments = transcript.segments && transcript.segments.length > 0;
 
     return (
       <div className="min-h-screen flex flex-col">
@@ -107,21 +114,33 @@ export default async function TranscriptPage({
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-            <div className="flex items-center mb-4">
-              <DocumentTextIcon className="h-6 w-6 text-purple-600 dark:text-purple-400 mr-2" />
-              <h2 className="text-xl font-semibold">Transcript Content</h2>
-            </div>
-            <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-              <p className="whitespace-pre-line">{transcript.content}</p>
-            </div>
-          </div>
+          {/* Use the new SegmentedTranscript component if segments exist */}
+          {hasSegments && audioUrl ? (
+            <SegmentedTranscript
+              segments={transcript.segments}
+              audioUrl={audioUrl}
+            />
+          ) : (
+            <>
+              {/* Show the original transcript content */}
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm mb-8">
+                <div className="flex items-center mb-4">
+                  <DocumentTextIcon className="h-6 w-6 text-purple-600 dark:text-purple-400 mr-2" />
+                  <h2 className="text-xl font-semibold">Transcript Content</h2>
+                </div>
+                <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                  <p className="whitespace-pre-line">{transcript.content}</p>
+                </div>
+              </div>
 
-          {audioUrl && (
-            <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-              <h2 className="text-xl font-semibold mb-4">Audio</h2>
-              <audio src={audioUrl} controls className="w-full" />
-            </div>
+              {/* Show the regular audio player if no segments */}
+              {audioUrl && (
+                <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
+                  <h2 className="text-xl font-semibold mb-4">Audio</h2>
+                  <audio src={audioUrl} controls className="w-full" />
+                </div>
+              )}
+            </>
           )}
         </main>
       </div>
