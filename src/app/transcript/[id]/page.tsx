@@ -10,17 +10,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { getSignedUrl } from "@/lib/r2";
 
-interface Transcript {
-  id: string;
-  content: string;
-  audioUrl: string;
-  detectedLang: string;
-  confidenceScore: number;
-  sentiment: string;
-  labels: string[];
-  createdAt: string;
-}
-
 export default async function TranscriptPage({
   params,
 }: {
@@ -59,6 +48,9 @@ export default async function TranscriptPage({
             <h1 className="text-3xl font-bold mb-2">Transcript</h1>
             <p className="text-gray-600 dark:text-gray-400">
               Generated on {new Date(transcript.createdAt).toLocaleString()}
+            </p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Total duration: {transcript.durationSec} seconds
             </p>
           </div>
 

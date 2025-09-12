@@ -1,14 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import LoginForm from "@/components/auth/LoginForm";
 import SignupForm from "@/components/auth/SignupForm";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createQueryString } from "@/lib/helpers";
 
 export default function Auth() {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -40,9 +44,15 @@ export default function Auth() {
           onChange={(index) => {
             setSelectedIndex(index);
             // Update the URL parameter without refreshing the page
-            const url = new URL(window.location.href);
-            url.searchParams.set("tab", index === 0 ? "login" : "signup");
-            window.history.replaceState({}, "", url.toString());
+            router.push(
+              pathname +
+                createQueryString({
+                  searchParams,
+                  paramsToUpdate: [
+                    { key: "tab", value: index === 0 ? "login" : "signup" },
+                  ],
+                })
+            );
           }}
         >
           <TabList className="mb-6 flex rounded-md border border-solid border-black/[.08] dark:border-white/[.145] p-1">
@@ -73,7 +83,7 @@ export default function Auth() {
           </TabList>
           <TabPanels>
             <TabPanel>
-              <LoginForm onComplete={() => {}} />
+              <LoginForm />
             </TabPanel>
             <TabPanel>
               <SignupForm />

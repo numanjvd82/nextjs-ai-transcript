@@ -42,10 +42,10 @@ model Transcript {
   audioUrl String // URL/path to stored mp3 file (S3, local, etc.)
 
   // Metadata
-  detectedLang    String? // ISO code, e.g. "en", "ur", "es"
-  sentiment       String? // e.g. "positive", "neutral", "negative"
-  confidenceScore Float? // transcription model confidence (0-1)
-  durationSec     Int? // length of audio in seconds
+  detectedLang    String // ISO code, e.g. "en", "ur", "es"
+  sentiment       String // e.g. "positive", "neutral", "negative"
+  confidenceScore Float // transcription model confidence (0-1)
+  durationSec     Int // length of audio in seconds
 
   // For ML training
   embedding Json? // vector embedding (for semantic search or clustering)

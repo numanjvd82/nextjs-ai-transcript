@@ -21,8 +21,9 @@ export async function POST(req: NextRequest) {
     if (!session) return;
     const formData = await req.formData();
     const file = formData.get("audioFile") as File;
+    const durationSec = Number(formData.get("durationSec") || 0);
 
-    if (!file) {
+    if (!file || durationSec <= 0) {
       return NextResponse.json({ error: "Missing file" }, { status: 400 });
     }
 
@@ -142,6 +143,7 @@ export async function POST(req: NextRequest) {
         confidenceScore,
         sentiment,
         labels,
+        durationSec,
       },
     });
 

@@ -11,13 +11,16 @@ import {
   ExclamationCircleIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
+import { createQueryString } from "@/lib/helpers";
+import { useRouter } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 interface SignupFormProps {}
 
 const signupSchema = z
   .object({
     username: z.string().min(3, "Username must be at least 3 characters"),
-    email: z.string().email("Please enter a valid email address"),
+    email: z.email("Please enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
   })
@@ -29,6 +32,9 @@ const signupSchema = z
 type SignupFormValues = z.infer<typeof signupSchema>;
 
 export default function SignupForm({}: SignupFormProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState("");
 
@@ -69,6 +75,14 @@ export default function SignupForm({}: SignupFormProps) {
       if (!response.ok) {
         throw new Error(responseData.error || "Signup failed");
       }
+
+      router.push(
+        pathname +
+          createQueryString({
+            searchParams,
+            paramsToUpdate: [{ key: "tab", value: "login" }],
+          })
+      );
     } catch (err) {
       console.log(err);
       setServerError(err instanceof Error ? err.message : "Signup failed");

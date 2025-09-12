@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,10 +12,6 @@ import {
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 
-interface LoginFormProps {
-  onComplete?: () => void;
-}
-
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(1, "Password is required"),
@@ -23,8 +19,10 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export default function LoginForm({ onComplete }: LoginFormProps) {
+export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState("");
 
@@ -59,7 +57,13 @@ export default function LoginForm({ onComplete }: LoginFormProps) {
         throw new Error(responseData.error || "Login failed");
       }
 
-      if (onComplete) onComplete();
+      // check if there is any callback url
+      const callbackUrl = searchParams.get("callbackUrl");
+      if (callbackUrl) {
+        router.push(callbackUrl);
+        router.refresh();
+        return;
+      }
       router.push("/dashboard");
       router.refresh();
     } catch (err) {

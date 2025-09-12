@@ -17,6 +17,7 @@ interface AudioExtractionModalProps {
   error: string | null;
   messageRef: React.RefObject<HTMLParagraphElement | null>;
   audioURL: string | null;
+  duration: number | null; // in seconds
 }
 
 interface TranscriptResult {
@@ -37,6 +38,7 @@ export default function AudioExtractionModal({
   error,
   messageRef,
   audioURL,
+  duration,
 }: AudioExtractionModalProps) {
   const router = useRouter();
   const initialFocusRef = useRef(null);
@@ -87,6 +89,9 @@ export default function AudioExtractionModal({
       // Create form data
       const formData = new FormData();
       formData.append("audioFile", audioFile);
+      if (duration) {
+        formData.append("durationSec", duration.toString());
+      }
 
       // Send to API
       const apiResponse = await fetch("/api/transcripts", {

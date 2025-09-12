@@ -22,7 +22,7 @@ export default function AudioFileUpload({ className }: AudioFileUploadProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isExtractionModalOpen, setIsExtractionModalOpen] = useState(false);
-  const { setVideoFile, audioURL, isProcessing, error, messageRef } =
+  const { setVideoFile, audioURL, isProcessing, error, messageRef, duration } =
     useVideoToAudio(null);
 
   // Function to handle file upload button click
@@ -113,9 +113,6 @@ export default function AudioFileUpload({ className }: AudioFileUploadProps) {
         onChange={handleFileChange}
       />
 
-      {/* Preview audio if available */}
-      {audioURL && <audio src={audioURL} controls className="mt-4" />}
-
       {/* Audio Extraction Modal */}
       <AudioExtractionModal
         isOpen={isExtractionModalOpen}
@@ -124,6 +121,7 @@ export default function AudioFileUpload({ className }: AudioFileUploadProps) {
         error={error}
         messageRef={messageRef}
         audioURL={audioURL}
+        duration={duration}
       />
     </div>
   );

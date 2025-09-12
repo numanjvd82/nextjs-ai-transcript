@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { redirect, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import Header from "@/components/Header";
-import useVideoToAudio from "@/hooks/useVideoToAudio";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import AudioFileUpload from "@/components/audio/AudioFileUpload";
 
@@ -33,15 +31,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-[#121212] rounded-lg border border-solid border-black/[.08] dark:border-white/[.145] p-6 shadow-sm">
-          <div className="text-center py-12">
-            <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-              You don't have any transcripts yet
-            </p>
-
-            <AudioFileUpload />
-          </div>
-        </div>
+        <AudioFileUpload />
       </main>
     </div>
   );
