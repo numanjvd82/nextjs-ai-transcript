@@ -21,6 +21,7 @@
     "form-data": "^4.0.4",
     "groq-sdk": "^0.32.0",
     "jsonwebtoken": "^9.0.2",
+    "motion": "^12.23.12",
     "next": "15.5.2",
     "node-fetch": "^3.3.2",
     "pg": "^8.16.3",

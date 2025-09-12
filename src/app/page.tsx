@@ -1,48 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
+import { useAuthUser } from "@/hooks/useAuthUser";
 import {
   MicrophoneIcon,
   PencilIcon,
   ShareIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
+import Loading from "@/components/ui/Loading";
 
 export default function Home() {
   const router = useRouter();
-  const [isChecking, setIsChecking] = useState(true);
+  const { user, isLoading } = useAuthUser();
 
+  // Redirect authenticated users to the transcript page
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch("/api/me");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.user) {
-            // Redirect to transcript page if authenticated
-            router.push("/transcript");
-            return;
-          }
-        }
-      } catch (error) {
-        console.error("Error checking auth:", error);
-      } finally {
-        setIsChecking(false);
-      }
-    };
+    if (user && !isLoading) {
+      router.push("/dashboard");
+    }
+  }, [user, isLoading, router]);
 
-    checkAuth();
-  }, [router]);
-
-  if (isChecking) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <ArrowPathIcon className="animate-spin h-10 w-10 text-foreground" />
-      </div>
-    );
+  if (isLoading) {
+    return <Loading />;
   }
 
   return (

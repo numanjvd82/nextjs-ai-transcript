@@ -3,35 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import UserMenu from "@/components/auth/UserMenu";
-import { useEffect, useState } from "react";
-
-interface User {
-  id: string;
-  username?: string;
-  email: string;
-}
+import { useAuthUser } from "@/hooks/useAuthUser";
 
 export default function Header() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch("/api/me");
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data.user);
-        }
-      } catch (error) {
-        console.error("Error fetching user data", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
+  const { user, isLoading } = useAuthUser();
 
   return (
     <header className="sticky top-0 z-10 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
