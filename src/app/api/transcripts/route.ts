@@ -44,10 +44,17 @@ export async function POST(req: NextRequest) {
     const transcription = await groq.audio.transcriptions.create({
       file: new File([buffer], file.name, { type: "audio/mpeg" }),
       model: "whisper-large-v3",
-      response_format: "json",
+      response_format: "verbose_json",
     });
 
     const content = transcription.text;
+    // If segments are inside 'transcription', use the correct property name
+    const segments =
+      (transcription as any).segments?.map((s: any) => ({
+        start: s.start,
+        end: s.end,
+        text: s.text,
+      })) ?? [];
 
     const getSentimentRes = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
@@ -144,6 +151,12 @@ export async function POST(req: NextRequest) {
         sentiment,
         labels,
         durationSec,
+        segments: {
+          createMany: { data: segments },
+        },
+      },
+      include: {
+        segments: true,
       },
     });
 
@@ -152,11 +165,6 @@ export async function POST(req: NextRequest) {
     console.error("Error processing transcript:", {
       error: error,
       stack: error?.stack,
-      requestInfo: {
-        method: req.method,
-        url: req.url,
-        headers: Object.fromEntries(req.headers.entries()),
-      },
     });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

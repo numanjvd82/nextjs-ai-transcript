@@ -14,4 +14,7 @@ export type Transcript = Prisma.TranscriptGetPayload<{
     confidenceScore: true;
     durationSec: true;
   };
+  include: {
+    segments: true;
+  };
 }>;
