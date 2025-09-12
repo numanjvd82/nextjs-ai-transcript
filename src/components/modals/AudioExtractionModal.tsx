@@ -9,6 +9,7 @@ import {
   ArrowPathIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
+import { Transcript } from "@/lib/types/model";
 
 interface AudioExtractionModalProps {
   isOpen: boolean;
@@ -18,17 +19,6 @@ interface AudioExtractionModalProps {
   messageRef: React.RefObject<HTMLParagraphElement | null>;
   audioURL: string | null;
   duration: number | null; // in seconds
-}
-
-interface TranscriptResult {
-  id: string;
-  content: string;
-  audioUrl: string;
-  detectedLang: string;
-  confidenceScore: number;
-  sentiment: string;
-  labels: string[];
-  createdAt: string;
 }
 
 export default function AudioExtractionModal({
@@ -42,8 +32,9 @@ export default function AudioExtractionModal({
 }: AudioExtractionModalProps) {
   const router = useRouter();
   const initialFocusRef = useRef(null);
-  const [transcriptResult, setTranscriptResult] =
-    useState<TranscriptResult | null>(null);
+  const [transcriptResult, setTranscriptResult] = useState<Transcript | null>(
+    null
+  );
   const [uploadingTranscript, setUploadingTranscript] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [requestAttempted, setRequestAttempted] = useState(false);
