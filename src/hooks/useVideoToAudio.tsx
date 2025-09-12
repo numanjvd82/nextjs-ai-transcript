@@ -10,6 +10,7 @@ export default function useVideoToAudio(file: File | null) {
   const [audioURL, setAudioURL] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [duration, setDuration] = useState<number | null>(null);
   const ffmpegRef = useRef(new FFmpeg());
   const messageRef = useRef<HTMLParagraphElement | null>(null);
 
@@ -82,6 +83,23 @@ export default function useVideoToAudio(file: File | null) {
         type: "audio/mp3",
       });
 
+      if (audioFile.size > 25 * 1024 * 1024) {
+        setError(
+          "Audio Size is too big. It should be equal or smaller than 25mb"
+        );
+        return null;
+      }
+
+      // create an audio instance to get duration
+      const audio = new Audio(URL.createObjectURL(audioFile));
+      await new Promise((resolve) => {
+        audio.onloadedmetadata = () => {
+          console.log("Audio duration:", audio.duration);
+          setDuration(audio.duration);
+          resolve(true);
+        };
+      });
+
       // Create URL for the audio file
       const url = URL.createObjectURL(audioFile);
       setAudioURL(url);
@@ -123,6 +141,7 @@ export default function useVideoToAudio(file: File | null) {
     error,
     audioURL,
     messageRef,
+    duration,
     setVideoFile,
   };
 }

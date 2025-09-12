@@ -8,11 +8,17 @@ generator client {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  username     String    @unique
-  email        String    @unique
-  passwordHash String
-  meetings     Meeting[]
+  id             Int             @id @default(autoincrement())
+  username       String          @unique
+  email          String          @unique
+  passwordHash   String
+  meetings       Meeting[]
+  transcripts    Transcript[]
+  summaries      Summary[]
+  blockchainLogs BlockchainLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Meeting {
@@ -27,19 +33,19 @@ model Meeting {
 }
 
 model Transcript {
-  id        Int     @id @default(autoincrement())
-  meeting   Meeting @relation(fields: [meetingId], references: [id])
-  meetingId Int
+  id        Int  @id @default(autoincrement())
+  userId    Int
+  meetingId Int?
 
   // Core data
   content  String // transcription text
   audioUrl String // URL/path to stored mp3 file (S3, local, etc.)
 
   // Metadata
-  detectedLang    String // ISO code, e.g. "en", "ur", "es"
-  sentiment       String // e.g. "positive", "neutral", "negative"
-  confidenceScore Float // transcription model confidence (0-1)
-  durationSec     Int // length of audio in seconds
+  detectedLang    String? // ISO code, e.g. "en", "ur", "es"
+  sentiment       String? // e.g. "positive", "neutral", "negative"
+  confidenceScore Float? // transcription model confidence (0-1)
+  durationSec     Int? // length of audio in seconds
 
   // For ML training
   embedding Json? // vector embedding (for semantic search or clustering)
@@ -48,18 +54,27 @@ model Transcript {
   // Audit
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id])
+  meeting Meeting? @relation(fields: [meetingId], references: [id])
 }
 
 model Summary {
-  id        Int     @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
+  userId    Int
   summary   String
-  meeting   Meeting @relation(fields: [meetingId], references: [id])
   meetingId Int
+
+  meeting Meeting @relation(fields: [meetingId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
 }
 
 model BlockchainLog {
-  id        Int     @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
+  userId    Int
   txHash    String
-  meeting   Meeting @relation(fields: [meetingId], references: [id])
-  meetingId Int     @unique
+  meetingId Int    @unique
+
+  user    User    @relation(fields: [userId], references: [id])
+  meeting Meeting @relation(fields: [meetingId], references: [id])
 }

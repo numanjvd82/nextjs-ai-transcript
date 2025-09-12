@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
+import { prisma } from "./prisma";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -16,7 +18,7 @@ export function signJwt(payload: object) {
 }
 
 type UserPayload = {
-  id: number;
+  id: string;
   email: string;
   iat: number;
   exp: number;
@@ -37,6 +39,63 @@ export function verifyJwt(token: string): UserPayload | null {
 
     return payload;
   } catch {
+    return null;
+  }
+}
+
+export interface SessionUser {
+  id: number;
+  username: string;
+  email: string;
+}
+
+export interface Session {
+  user: SessionUser;
+}
+
+/**
+ * Get the current user session from the server
+ * Use this in server components or API routes
+ */
+export async function getServerSession(): Promise<Session | null> {
+  try {
+    // Get the token from cookies
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) {
+      return null;
+    }
+
+    // Verify the token
+    const payload = verifyJwt(token);
+    if (!payload) {
+      return null;
+    }
+
+    // Get the user from the database
+    const user = await prisma.user.findUnique({
+      where: { id: Number(payload.id) },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return {
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+      },
+    };
+  } catch (error) {
+    console.error("Error getting server session:", error);
     return null;
   }
 }

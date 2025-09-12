@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import {
   Menu,
@@ -13,17 +13,11 @@ import {
 import { CloudArrowUpIcon, MicrophoneIcon } from "@heroicons/react/24/outline";
 import useVideoToAudio from "@/hooks/useVideoToAudio";
 import AudioExtractionModal from "@/components/modals/AudioExtractionModal";
-
-interface User {
-  id: string;
-  username?: string;
-  email: string;
-}
+import { useAuthUser } from "@/hooks/useAuthUser";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, isLoading } = useAuthUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isExtractionModalOpen, setIsExtractionModalOpen] = useState(false);
   const { setVideoFile, audioURL, isProcessing, error, messageRef } =
@@ -37,43 +31,26 @@ export default function DashboardPage() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e);
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      console.log("Selected file:", file);
       const fileType = file.type;
+      // Validation
+      if (file.size > 100 * 1024 * 1024) {
+        // 100MB limit
+        alert("File size exceeds 100MB limit. Please upload a smaller file.");
+        return;
+      }
       if (fileType.startsWith("audio/")) {
         router.push("/transcript/upload");
       } else if (fileType.startsWith("video/")) {
-        setIsExtractionModalOpen(true);
         setVideoFile(file);
+        setIsExtractionModalOpen(true);
       } else {
         alert("Please upload a valid audio or video file.");
       }
     }
   };
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch("/api/me");
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data.user);
-        } else {
-          // Redirect to login if not authenticated
-          router.push("/auth");
-        }
-      } catch (error) {
-        console.error("Error fetching user data", error);
-        // Redirect to login if error
-        router.push("/auth");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, [router]);
 
   if (isLoading) {
     return (
@@ -81,6 +58,10 @@ export default function DashboardPage() {
         <div className="animate-spin h-10 w-10 border-4 border-foreground/20 rounded-full border-t-foreground"></div>
       </div>
     );
+  }
+
+  if (!user) {
+    redirect("/auth?callbackUrl=/dashboard");
   }
 
   return (
