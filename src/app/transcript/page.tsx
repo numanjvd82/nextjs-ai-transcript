@@ -9,6 +9,7 @@ import {
   LanguageIcon,
   ClockIcon,
 } from "@heroicons/react/24/outline";
+import { formatDate } from "@/lib/helpers";
 
 export default async function TranscriptList() {
   // Get the current user session
@@ -106,14 +107,7 @@ export default async function TranscriptList() {
                       <div className="flex items-center">
                         <ClockIcon className="h-4 w-4 mr-1" />
                         <span>
-                          {new Date(transcript.createdAt).toLocaleDateString(
-                            undefined,
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )}
+                          {formatDate(transcript.createdAt, "MMM D, YYYY")}
                         </span>
                       </div>
 

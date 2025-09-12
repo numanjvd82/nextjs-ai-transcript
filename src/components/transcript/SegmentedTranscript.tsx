@@ -3,6 +3,8 @@
 import { useRef, useState, useEffect } from "react";
 import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { TranscriptSegment } from "@/lib/types/model";
+import dayjs from "dayjs";
+import { formatTime } from "@/lib/helpers";
 
 interface SegmentedTranscriptProps {
   segments: TranscriptSegment[];
@@ -18,24 +20,6 @@ export default function SegmentedTranscript({
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeSegmentId, setActiveSegmentId] = useState<number | null>(null);
   const [duration, setDuration] = useState(0);
-
-  // Format seconds to MM:SS format
-  const formatTime = (timeInSeconds: number | null | undefined) => {
-    // Handle invalid values
-    if (
-      timeInSeconds === null ||
-      timeInSeconds === undefined ||
-      isNaN(timeInSeconds)
-    ) {
-      return "00:00";
-    }
-
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}`;
-  };
 
   // Safely get segment time
   const getSegmentTime = (time: number | null | undefined) => {

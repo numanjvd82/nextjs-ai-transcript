@@ -10,6 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { getSignedUrl } from "@/lib/r2";
 import SegmentedTranscript from "@/components/transcript/SegmentedTranscript";
+import { formatDate } from "@/lib/helpers";
 
 export default async function TranscriptPage({
   params,
@@ -54,7 +55,7 @@ export default async function TranscriptPage({
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Transcript</h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Generated on {new Date(transcript.createdAt).toLocaleString()}
+              Generated on {formatDate(transcript.createdAt)}
             </p>
             <p className="text-gray-600 dark:text-gray-400">
               Total duration: {transcript.durationSec} seconds
