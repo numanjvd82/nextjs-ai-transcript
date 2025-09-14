@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 import { useAuthUser } from "@/hooks/useAuthUser";
-import AudioFileUpload from "@/components/audio/AudioFileUpload";
+import FileUpload from "@/components/audio/AudioFileUpload";
 
 export default function DashboardPage() {
   const { user, isLoading } = useAuthUser();
@@ -31,7 +31,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <AudioFileUpload />
+        <FileUpload />
       </main>
     </div>
   );

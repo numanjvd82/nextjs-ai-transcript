@@ -11,19 +11,26 @@ import {
   Transition,
 } from "@headlessui/react";
 import { Fragment } from "react";
-import useVideoToAudio from "@/hooks/useVideoToAudio";
+import useMediaProcessor from "@/hooks/useMediaProcessor";
 import AudioExtractionModal from "@/components/modals/AudioExtractionModal";
 
-interface AudioFileUploadProps {
+interface FileUploadProps {
   className?: string;
 }
 
-export default function AudioFileUpload({ className }: AudioFileUploadProps) {
+export default function FileUpload({ className }: FileUploadProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isExtractionModalOpen, setIsExtractionModalOpen] = useState(false);
-  const { setVideoFile, audioURL, isProcessing, error, messageRef, duration } =
-    useVideoToAudio(null);
+  const {
+    setMediaFile,
+    audioURL,
+    isProcessing,
+    error,
+    messageRef,
+    duration,
+    audioFile,
+  } = useMediaProcessor(null);
 
   // Function to handle file upload button click
   const handleUploadClick = () => {
@@ -35,7 +42,6 @@ export default function AudioFileUpload({ className }: AudioFileUploadProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const fileType = file.type;
 
       // Validation
       if (file.size > 100 * 1024 * 1024) {
@@ -44,14 +50,9 @@ export default function AudioFileUpload({ className }: AudioFileUploadProps) {
         return;
       }
 
-      if (fileType.startsWith("audio/")) {
-        router.push("/transcript/upload");
-      } else if (fileType.startsWith("video/")) {
-        setVideoFile(file);
-        setIsExtractionModalOpen(true);
-      } else {
-        alert("Please upload a valid audio or video file.");
-      }
+      // Both audio and video files go through the same process now
+      setMediaFile(file);
+      setIsExtractionModalOpen(true);
     }
   };
 

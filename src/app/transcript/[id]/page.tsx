@@ -11,6 +11,7 @@ import {
 import { getSignedUrl } from "@/lib/r2";
 import SegmentedTranscript from "@/components/transcript/SegmentedTranscript";
 import { formatDate } from "@/lib/helpers";
+import dayjs from "dayjs";
 
 export default async function TranscriptPage({
   params,
@@ -18,7 +19,7 @@ export default async function TranscriptPage({
   params: { id: string };
 }) {
   // Get the current user session
-  const { id } = params;
+  const { id } = await params;
   const session = await getServerSession();
 
   // Redirect to login if not authenticated
@@ -58,7 +59,7 @@ export default async function TranscriptPage({
               Generated on {formatDate(transcript.createdAt)}
             </p>
             <p className="text-gray-600 dark:text-gray-400">
-              Total duration: {transcript.durationSec} seconds
+              Total duration: {dayjs(transcript.durationSec).format("mm:ss")}
             </p>
           </div>
 

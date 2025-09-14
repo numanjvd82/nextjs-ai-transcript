@@ -15,13 +15,13 @@
     "@headlessui/react": "^2.2.7",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.1",
+    "@langchain/core": "^0.3.75",
     "@langchain/groq": "^0.2.3",
     "@prisma/client": "^6.16.1",
+    "all": "^0.0.0",
     "bcrypt": "^6.0.0",
     "dayjs": "^1.11.18",
-    "ethers": "^6.15.0",
     "form-data": "^4.0.4",
-    "groq-sdk": "^0.32.0",
     "jsonwebtoken": "^9.0.2",
     "langchain": "^0.3.33",
     "motion": "^12.23.12",
@@ -32,7 +32,7 @@
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
     "simple-peer": "^9.11.1",
-    "zod": "^4.1.5"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
